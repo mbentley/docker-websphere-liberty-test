@@ -1,0 +1,27 @@
+#Liberty Webprofile 17.0.0.2 based on centod 7.3.1611 and ibm jre8 modified to add openssl
+FROM ibmjava8:antmbasev1.2 
+
+LABEL maintainer="Karthik.Ramachandran2@anthem.com" 
+
+RUN yum install -y unzip openssl \
+    && yum clean all \
+    && curl -L https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/17.0.0.2/wlp-webProfile7-17.0.0.2.zip -k -o /tmp/wlp.zip \
+    && unzip -q /tmp/wlp.zip -d /opt/ibm \
+    && rm /tmp/wlp.zip
+
+ENV PATH=/opt/ibm/wlp/bin:$PATH \
+	LOG_DIR=/logs \
+    WLP_OUTPUT_DIR=/opt/ibm/wlp/output
+
+COPY docker-server /opt/ibm/docker/
+
+RUN /opt/ibm/wlp/bin/server create digitechServer \
+    && mkdir /logs \
+	&& ln -s $WLP_OUTPUT_DIR/digitechServer /output \
+	&& ln -s /opt/ibm/wlp/usr/servers/digitechServer /config \
+	&& chmod a+x /opt/ibm/docker/docker-server \
+	&& rm -rf $WLP_OUTPUT_DIR/.classCache /output/workarea 
+
+EXPOSE 9080 9443
+
+CMD ["/opt/ibm/docker/docker-server", "run", "digitechServer"]

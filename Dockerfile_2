@@ -1,0 +1,16 @@
+# Provider core application build based on antmbase libertyJava web
+
+FROM sit-dtr.anthem.com/digitech_dev/antm-base-liberty7web:v1.1
+
+LABEL maintainer="Karthik.Ramachandran2@anthem.com"
+
+COPY providerconfig.zip /config
+
+#1. Copy providerconfig.zip file to the image's /config folder 
+#                (Contents server.xml, properties, jdbc drivers, security jars/policy file & Shared lib & WAR file) 
+#2. Unzip providerconfig.zip in /config folder
+#3. copy bcprov-jdk16-1.46.jar to java_home/lib/ext folder
+
+RUN cd /config && unzip -o providerconfig.zip \
+	&& cp /config/lib/security/bcprov-jdk16-1.46.jar $JAVA_HOME/lib/ext \
+	&& rm providerconfig.zip
