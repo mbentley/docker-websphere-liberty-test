@@ -22,6 +22,8 @@ RUN /opt/ibm/wlp/bin/server create digitechServer \
 	&& chmod a+x /opt/ibm/docker/docker-server \
 	&& rm -rf $WLP_OUTPUT_DIR/.classCache /output/workarea 
 
+COPY server.xml  /config/server.xml
+
 EXPOSE 9080 9443
 
 CMD ["/opt/ibm/docker/docker-server", "run", "digitechServer"]
